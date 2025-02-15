@@ -4,8 +4,9 @@ import { useGSAP } from "@gsap/react"
 import gsap from "gsap";
 
 
-const Canvas = ({ startIndex }) => {
+const Canvas = ({ details }) => {
 
+  const { startIndex, numImages, duration, size, top, left, zIndex } = details;
 
   const [imgIndex, setImgIndex] = useState({ value: startIndex });
   const canvasRef = useRef(null);
@@ -14,7 +15,7 @@ const Canvas = ({ startIndex }) => {
   useGSAP(() => {
     gsap.to(imgIndex, {
       value: startIndex + 149,
-      duration: 3,
+      duration: duration,
       repeat: -1,
       ease: "linear",
       onUpdate: () => {
@@ -25,24 +26,35 @@ const Canvas = ({ startIndex }) => {
 
 
   useEffect(() => {
-    // const scale = window.devicePixelRatio;
+    const scale = window.devicePixelRatio;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const img = new Image();
     // console.log(startIndex)
     img.src = images[imgIndex.value]
     img.onload = () => {
-      canvas.width = img.width
-      canvas.height = img.height
-      // canvas.style.width = canvas.offsetWidth + "px";
-      // canvas.style.height = canvas.offsetHeight + "px";
+      canvas.width = canvas.offsetWidth * scale;
+      canvas.height = canvas.offsetHeight * scale;
+      canvas.style.width = canvas.offsetWidth + "px";
+      canvas.style.height = canvas.offsetHeight + "px";
 
-      // ctx.scale(scale, scale);
-      ctx.drawImage(img, 0, 0);
+
+      ctx.scale(scale, scale);
+      ctx.drawImage(img, 0, 0, canvas.offsetWidth, canvas.offsetHeight);
     };
   }, [imgIndex]);
 
-  return <canvas ref={canvasRef}></canvas>
+  return <canvas ref={canvasRef}
+    className="absolute"
+    style={{
+      width: `${size * 1.8}px`,
+      height: `${size * 1.8}px`,
+      top: `${top}%`,
+      left: `${left}%`,
+      zIndex: `${zIndex}`,
+    }}
+    id="canvas"
+  ></canvas>
 }
 
 export default Canvas

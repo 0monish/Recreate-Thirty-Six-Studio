@@ -41,9 +41,9 @@ export default [
             startIndex: 600,
             numImages: 150,
             duration: 3,
-            size: 269,
+            size: 250,
             top: 24,
-            left: 68,
+            left: 70,
             zIndex: 0,
         },
         {
@@ -52,7 +52,7 @@ export default [
             duration: 3,
             size: 205,
             top: 5,
-            left: 2,
+            left: 1,
             zIndex: 0,
         },
         {

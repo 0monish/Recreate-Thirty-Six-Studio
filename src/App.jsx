@@ -5,8 +5,9 @@ import { useState, useRef, useEffect } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from "gsap";
 import { FiMenu } from "react-icons/fi";
+import scrollTrigger from 'gsap/ScrollTrigger';
 
-
+gsap.registerPlugin(scrollTrigger);
 
 const App = () => {
 
@@ -16,7 +17,7 @@ const App = () => {
   const curvedText = useRef(null)
 
   useEffect(() => {
-    // Initialize CircleType inside useEffect
+   
     if (curvedText.current) {
       new CircleType(curvedText.current);
     }
@@ -25,9 +26,9 @@ const App = () => {
   useGSAP(() => {
     gsap.from("h1 span", {
       y: 200,
-      delay: 0.5,
+      delay: 1,
       opacity: 0,
-      duration: 1,
+      duration: 1.5,
       rotate: 10,
       stagger: 0.1,
       ease: "elastic.out(0.5,0.5)",
@@ -42,22 +43,55 @@ const App = () => {
       ease: "power2.out",
     })
 
-    gsap.to(curvedText.current, {
-      delay: 1, // Delay before the animation starts
-      rotate: 360, // Rotate 360 degrees
-      duration: 20, // Duration of one full rotation (in seconds)
-      repeat: -1, // Repeat infinitely
-      ease: "linear" // Use linear easing for smooth, constant rotation
+    const animation = gsap.to("#curved-text", {
+      delay: 1,
+      rotate: 360,
+      duration: 20, // Default duration
+      repeat: -1,
+      ease: "linear"
     });
+
+    let timeout;
+    // Adjust the timeScale to smoothly transition the duration on scroll
+    const handleScroll = () => {
+      // Increase the speed by changing timeScale to simulate shorter duration
+      gsap.to(animation, {
+        timeScale: 20 / 5, // This is the ratio of the new duration to the old duration
+        duration: 0.2, // Smooth transition duration
+        ease: "linear",
+      });
+    };
+
+    // Reset the speed after scrolling stops, transitioning it smoothly back to original speed
+    const handleStopScroll = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        gsap.to(animation, {
+          timeScale: 1, // Reset timeScale to default
+          duration: 1, // Smooth transition duration
+          ease: "linear",
+        });
+      }, 150); // 150ms delay after scroll stops
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleStopScroll);
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleStopScroll);
+    };
+
   })
 
   return (
-    <div className="min-w-[320px] min-h-screen flex flex-col font-['Helvetica_Now_Display'] selection:bg-white selection:text-black ">
+    <div className="min-w-[320px] w-full relative min-h-screen flex flex-col selection:bg-white selection:text-black overflow-hidden ">
       {showCanvas &&
-        CanvasDetails[0].map((details, index) => <Canvas details={details} />)}
+        CanvasDetails[0].map((details, index) => <Canvas details={details} key={index} />)}
 
       {/* Navigation */}
-      <nav className="flex justify-between items-center py-5 px-5">
+      <nav className="flex justify-between items-center py-5 px-5 ">
         <div className="text-2xl font-bold">Thirtysixstudio</div>
 
         {/* Desktop Menu */}
@@ -83,9 +117,9 @@ const App = () => {
 
       {/* Hero Section */}
       <main className="flex-1 flex flex-col mt-5 ">
-        <div className="w-full flex flex-col md:flex-row ">
+        <div className="w-full flex flex-col md:flex-row items-center">
 
-          <div className="mx-5 md:w-2xs md:ml-[25%] space-y-8 border-1 pr-5">
+          <div className="md:w-xs ml-5 md:ml-[25%] md:mr-[10%] space-y-8 pr-5">
             <h1 className="text-2xl md:text-3xl font-medium leading-tight">
               At Thirtysixstudio, we build digital assets
               and immersive experiences
@@ -102,16 +136,27 @@ const App = () => {
             <p>Scroll </p>
           </div>
 
-          <div className="ml-10 mr-0 relative w-full flex items-center justify-center border-1 border-red-600 overflow-hidden">
-            <h2 className="text-2xl" ref={curvedText}>  THIRTYSIXSTUDIO — FOR ALL THINGS DIGITAL PRODUCTION —</h2>
+
+          <div className='w-xs ml-[4%] relative '>
+
+            <div id="curved-text" className="flex items-center justify-center ">
+              <p className="text-xl" ref={curvedText}> THIRTYSIXSTUDIO — FOR ALL THINGS DIGITAL PRODUCTION —</p>
+            </div>
           </div>
 
         </div>
       </main>
 
 
+      <div className="w-full">
+        <h1 className="text-[6rem] md:text-[11.5rem] mx-5">
+          <span>Thirty</span><span>Six</span><span>Studios</span>
+        </h1>
+      </div>
+
+
     </div>
   );
 }
 
-export default App
+export default App  
