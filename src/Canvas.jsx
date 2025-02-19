@@ -26,6 +26,7 @@ const Canvas = ({ details }) => {
 
 
   useEffect(() => {
+
     const scale = window.devicePixelRatio;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -46,6 +47,8 @@ const Canvas = ({ details }) => {
 
   return <canvas ref={canvasRef}
     className="absolute"
+    data-scroll
+    data-scroll-speed={Math.random().toFixed(1)} 
     style={{
       width: `${size * 1.8}px`,
       height: `${size * 1.8}px`,
