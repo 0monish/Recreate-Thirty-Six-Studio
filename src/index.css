@@ -7,10 +7,6 @@ body {
     color: #fff;
 }
 
-canvas {
-    pointer-events: none;
-}
-
 h1 span {
     display: inline-block;
 }
